@@ -18,4 +18,16 @@ npm run build
 npm run start
 ```
 
+## In-game Keyboard Shortcuts
+
+| Shortcut                           | Description             |
+| ---------------------------------- | ----------------------- |
+| w                                  | Move block to the back  |
+| a                                  | Move block to the left  |
+| s                                  | Move block to the right |
+| d                                  | Move block to the front |
+| \<space\>                          | Move block down         |
+| \<shift\> + \<space\>              | Move block up           |
+| \<ctrl\> + \<shift\> + \<alt\> + I | Hide/show inspector     |
+
 
