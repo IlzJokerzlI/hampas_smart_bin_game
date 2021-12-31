@@ -3,8 +3,11 @@ import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
 import * as BABYLON from "@babylonjs/core";
 
-// World axis
-var showWorldAxis = function(size, scene) {
+const groundSide = 11
+const wallHeight = groundSide * 2
+
+// World axes
+function showWorldAxes(size, scene) {
     var makeTextPlane = function(text, color, size) {
         var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
         dynamicTexture.hasAlpha = true;
@@ -52,27 +55,73 @@ var showWorldAxis = function(size, scene) {
     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
 };
 
+// Vector for rotation with degree as unit
+function getRotateVector({ x = 0, y = 0, z = 0 }): BABYLON.Vector3 {
+    const degreeToRadiant = (val: number) => (val == 0) ? 0 : val * Math.PI / 180
+    return new BABYLON.Vector3(degreeToRadiant(x), degreeToRadiant(y), degreeToRadiant(z))
+}
+
+// Create board
+function createBoard(scene: BABYLON.Scene) {
+    // Ground
+    var ground = BABYLON.MeshBuilder.CreateGround('ground', { width: groundSide, height: groundSide, subdivisions: groundSide }, scene)
+    ground.material = new BABYLON.StandardMaterial('groundMat', scene)
+    ground.material.wireframe = true;
+    ground.position = new BABYLON.Vector3(0, -0.5)
+
+    // Walls
+    var fWall = BABYLON.MeshBuilder.CreatePlane('fWall', { width: groundSide, height: wallHeight }, scene)
+    fWall.position = new BABYLON.Vector3(0, wallHeight / 2 - 0.5, groundSide / 2)
+
+    var bWall = BABYLON.MeshBuilder.CreatePlane('bWall', { width: groundSide, height: wallHeight }, scene)
+    bWall.position = new BABYLON.Vector3(0, wallHeight / 2 - 0.5, -groundSide / 2)
+    bWall.rotation = getRotateVector({ y: 180 })
+
+    var lWall = BABYLON.MeshBuilder.CreatePlane('lWall', { width: groundSide, height: wallHeight }, scene)
+    lWall.position = new BABYLON.Vector3(groundSide / 2, wallHeight / 2 - 0.5)
+    lWall.rotation = getRotateVector({ y: 90 })
+
+    var rWall = BABYLON.MeshBuilder.CreatePlane('rWall', { width: groundSide, height: wallHeight }, scene)
+    rWall.position = new BABYLON.Vector3(-groundSide / 2, wallHeight / 2 - 0.5)
+    rWall.rotation = getRotateVector({ y: 270 })
+}
+
 class App {
     constructor() {
-        // create the canvas html element and attach it to the webpage
+        // Create the canvas html element and attach it to the webpage
         var canvas = document.createElement("canvas");
         canvas.style.width = "100%";
         canvas.style.height = "100%";
         canvas.id = "gameCanvas";
         document.body.appendChild(canvas);
 
-        // initialize babylon scene and engine
+        // Initialize babylon scene and engine
         var engine = new BABYLON.Engine(canvas, true);
         var scene = new BABYLON.Scene(engine);
 
-        showWorldAxis(10, scene)
+        showWorldAxes(10, scene)
 
-        var camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, BABYLON.Vector3.Zero(), scene);
+        // Camera
+        var camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("camera", 1, 1, 45, BABYLON.Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
-        var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
-        var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
 
-        // hide/show the Inspector
+        // Light
+        var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
+
+        // Board
+        createBoard(scene)
+
+        // Block
+        var block = BABYLON.MeshBuilder.CreateBox('block', { height: 1, width: 1, depth: 1, }, scene)
+        block.enableEdgesRendering()
+        block.edgesColor = new BABYLON.Color4(1, 1, 1, 1)
+
+        // Material
+        var mat = new BABYLON.StandardMaterial('', scene)
+        mat.diffuseColor = new BABYLON.Color3(1, 1, 0)
+        block.material = mat
+
+        // Hide/show the Inspector
         window.addEventListener("keydown", (ev) => {
             // Shift+Ctrl+Alt+I
             if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
