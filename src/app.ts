@@ -111,7 +111,7 @@ class App {
         showWorldAxes(10, scene)
 
         // Camera
-        let camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("camera", 1, 1, 45, BABYLON.Vector3.Zero(), scene);
+        let camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("camera", 270 * Math.PI / 180, 0.5, 45, BABYLON.Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
 
         // Light
@@ -139,6 +139,21 @@ class App {
                 } else {
                     scene.debugLayer.show();
                 }
+            }
+
+            // Movement
+            if (ev.key === 'w') {
+                block.position.z += 1
+            } else if (ev.key === 'a') {
+                block.position.x -= 1
+            } else if (ev.key === 's') {
+                block.position.z -= 1
+            } else if (ev.key === 'd') {
+                block.position.x += 1
+            } else if (!ev.shiftKey && ev.key === ' ') {
+                block.position.y -= 1
+            } else if (ev.shiftKey && ev.key === ' ') {
+                block.position.y += 1
             }
         });
 
