@@ -1,7 +1,5 @@
-import "@babylonjs/core/Debug/debugLayer";
-import "@babylonjs/inspector";
-import "@babylonjs/loaders/glTF";
-import * as BABYLON from "@babylonjs/core";
+import * as BABYLON from "babylonjs";
+import { GridMaterial } from "babylonjs-materials"
 
 const groundSide = 11
 const wallHeight = groundSide * 2
@@ -63,27 +61,37 @@ function getRotateVector({ x = 0, y = 0, z = 0 }): BABYLON.Vector3 {
 
 // Create board
 function createBoard(scene: BABYLON.Scene) {
+    const mat = new GridMaterial('mat', scene)
+    mat.gridOffset = new BABYLON.Vector3(0.5, 0, 0.5)
+    mat.majorUnitFrequency = 0
+    mat.lineColor = new BABYLON.Color3(1.0, 1.0, 1.0)
+    mat.mainColor = new BABYLON.Color3(1.0, 1.0, 1.0)
+    mat.opacity = 0.98
+
     // Ground
     var ground = BABYLON.MeshBuilder.CreateGround('ground', { width: groundSide, height: groundSide, subdivisions: groundSide }, scene)
-    ground.material = new BABYLON.StandardMaterial('groundMat', scene)
-    ground.material.wireframe = true;
+    ground.material = mat
     ground.position = new BABYLON.Vector3(0, -0.5)
 
     // Walls
     var fWall = BABYLON.MeshBuilder.CreatePlane('fWall', { width: groundSide, height: wallHeight }, scene)
     fWall.position = new BABYLON.Vector3(0, wallHeight / 2 - 0.5, groundSide / 2)
+    fWall.material = mat
 
     var bWall = BABYLON.MeshBuilder.CreatePlane('bWall', { width: groundSide, height: wallHeight }, scene)
     bWall.position = new BABYLON.Vector3(0, wallHeight / 2 - 0.5, -groundSide / 2)
     bWall.rotation = getRotateVector({ y: 180 })
+    bWall.material = mat
 
     var lWall = BABYLON.MeshBuilder.CreatePlane('lWall', { width: groundSide, height: wallHeight }, scene)
     lWall.position = new BABYLON.Vector3(groundSide / 2, wallHeight / 2 - 0.5)
     lWall.rotation = getRotateVector({ y: 90 })
+    lWall.material = mat
 
     var rWall = BABYLON.MeshBuilder.CreatePlane('rWall', { width: groundSide, height: wallHeight }, scene)
     rWall.position = new BABYLON.Vector3(-groundSide / 2, wallHeight / 2 - 0.5)
     rWall.rotation = getRotateVector({ y: 270 })
+    rWall.material = mat
 }
 
 class App {
