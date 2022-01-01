@@ -148,7 +148,7 @@ class App {
         // Hide/show the Inspector
         window.addEventListener("keydown", (ev) => {
             // Shift+Ctrl+Alt+I
-            if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
+            if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.key === 'I') {
                 if (scene.debugLayer.isVisible()) {
                     scene.debugLayer.hide()
                 } else {
@@ -156,18 +156,48 @@ class App {
                 }
             }
 
-            // Movement
-            if (ev.key === 'w' && block.position.z < groundSide / 2 - 1) {
+            // Block rotation
+            if (ev.shiftKey) {
+                switch (ev.key) {
+                    case 'w': {
+                        // x counter-clock wise rotation
+                        break
+                    }
+                    case 's': {
+                        // X clock wise rotation
+                        break
+                    }
+                    case 'a': {
+                        // y counter-clock wise rotation
+                        break
+                    }
+                    case 'd': {
+                        // y clock wise rotation
+                        break
+                    }
+                    case 'q': {
+                        // z counter-clock wise rotation
+                        break
+                    }
+                    case 'e': {
+                        // z clock wise rotation
+                        break
+                    }
+                }
+            }
+
+            // Block movement
+            if (ev.key === 'w' && block.position.z < groundSide / 2 - 1) { // Front
                 block.position.z += 1
-            } else if (ev.key === 'a' && block.position.x > -groundSide / 2 + 1) {
-                block.position.x -= 1
-            } else if (ev.key === 's' && block.position.z > -groundSide / 2 + 1) {
+            } else if (ev.key === 's' && block.position.z > -groundSide / 2 + 1) { // Back
                 block.position.z -= 1
-            } else if (ev.key === 'd' && block.position.x < groundSide / 2 - 1) {
+            } else if (ev.key === 'a' && block.position.x > -groundSide / 2 + 1) { // Left
+                block.position.x -= 1
+            } else if (ev.key === 'd' && block.position.x < groundSide / 2 - 1) { // Right
                 block.position.x += 1
-            } else if (!ev.shiftKey && ev.key === ' ' && block.position.y > 0) {
+            } else if (!ev.shiftKey && ev.key === ' ' && block.position.y > 0) { // Down
                 block.position.y -= 1
-            } else if (ev.shiftKey && ev.key === ' ' && block.position.y < wallHeight - 1.5) {
+            } else if (ev.shiftKey && ev.key === ' ' && block.position.y < wallHeight - 1.5) { // Up
                 block.position.y += 1
             }
         })
