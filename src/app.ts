@@ -1,5 +1,6 @@
 import * as BABYLON from "babylonjs"
-import { GridMaterial } from "babylonjs-materials"
+import { GameBoard } from "./app/game-board"
+import { Rad } from './app/utils'
 
 const groundSide = 11
 const wallHeight = groundSide * 2
@@ -53,61 +54,6 @@ function showWorldAxes(size, scene) {
     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size)
 }
 
-// Vector for rotation with degree as unit
-function getRotateVector({ x = 0, y = 0, z = 0 }): BABYLON.Vector3 {
-    const degreeToRadiant = (val: number) => (val == 0) ? 0 : val * Math.PI / 180
-    return new BABYLON.Vector3(degreeToRadiant(x), degreeToRadiant(y), degreeToRadiant(z))
-}
-
-// Create board
-function createBoard(scene: BABYLON.Scene) {
-    /// [walls] contain a map of information about the walls in the board.
-    /// The keys act as the name of the wall, the values contain the data
-    /// of each walls. They are formatted as following:
-    ///
-    /// [x-position, y-position, z-position, y-rotation]
-    let walls = new Map([
-        ['fWall', [0, wallHeight / 2 - 0.5, groundSide / 2, 0]],
-        ['bWall', [0, wallHeight / 2 - 0.5, -groundSide / 2, 180]],
-        ['lWall', [-groundSide / 2, wallHeight / 2 - 0.5, 0, 270]],
-        ['rWall', [groundSide / 2, wallHeight / 2 - 0.5, 0, 90]],
-    ])
-
-    // Board material
-    const mat = new GridMaterial('mat', scene)
-    mat.gridOffset = new BABYLON.Vector3(0.5, 0, 0.5)
-    mat.majorUnitFrequency = 0
-    mat.lineColor = new BABYLON.Color3(1.0, 1.0, 1.0)
-    mat.mainColor = new BABYLON.Color3(1.0, 1.0, 1.0)
-    mat.opacity = 0.98
-
-    // Ground
-    let ground = BABYLON.MeshBuilder.CreateGround('ground', { width: groundSide, height: groundSide, subdivisions: groundSide }, scene)
-    ground.material = mat
-    ground.position = new BABYLON.Vector3(0, -0.5, 0)
-
-    // Lid
-    let lid = BABYLON.MeshBuilder.CreatePlane('lid', { width: groundSide, height: groundSide }, scene)
-    lid.position = new BABYLON.Vector3(0, wallHeight - 0.5, 0)
-    lid.rotation = getRotateVector({ x: 90 })
-    lid.checkCollisions = true
-    lid.visibility = 0
-
-    // Walls
-    for (let [name, data] of walls) {
-        let wall = BABYLON.MeshBuilder.CreatePlane(name, { width: groundSide, height: wallHeight }, scene)
-        wall.position = new BABYLON.Vector3(data[0], data[1], data[2])
-        wall.rotation = getRotateVector({ y: data[3] })
-        wall.material = mat
-
-        let wallCollision = BABYLON.MeshBuilder.CreatePlane(name, { width: groundSide, height: wallHeight, sideOrientation: BABYLON.Mesh.BACKSIDE }, scene)
-        wallCollision.position = new BABYLON.Vector3(data[0], data[1], data[2])
-        wallCollision.rotation = getRotateVector({ y: data[3] })
-        wallCollision.checkCollisions = true
-        wallCollision.visibility = 0
-    }
-}
-
 class App {
     constructor() {
         // Create the canvas html element and attach it to the webpage
@@ -125,7 +71,7 @@ class App {
         showWorldAxes(10, scene)
 
         // Camera
-        let camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("camera", 270 * Math.PI / 180, 0.5, 45, BABYLON.Vector3.Zero(), scene)
+        let camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("camera", Rad(270), 0.5, 45, BABYLON.Vector3.Zero(), scene)
         camera.attachControl(canvas, true)
         camera.checkCollisions = true
 
@@ -133,7 +79,7 @@ class App {
         let light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene)
 
         // Board
-        createBoard(scene)
+        new GameBoard(scene, {})
 
         // Block
         let block = BABYLON.MeshBuilder.CreateBox('block', { height: 1, width: 1, depth: 1, }, scene)
@@ -207,7 +153,7 @@ class App {
 
             // Prevent camera going under ground level
             if (camera.position.y < 0) {
-                camera.beta = Math.PI / 2
+                camera.beta = Rad(90)
             }
             scene.render()
         })
