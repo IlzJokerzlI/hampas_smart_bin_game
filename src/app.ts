@@ -67,7 +67,7 @@ class App {
                         break
                     }
                     case 's': {
-                        // X clock wise rotation
+                        // x clock wise rotation
                         break
                     }
                     case 'a': {
