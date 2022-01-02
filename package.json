@@ -18,6 +18,7 @@
     "webpack-dev-server": "^4.6.0"
   },
   "dependencies": {
+    "ammojs-typed": "^1.0.6",
     "babylonjs": "^4.2.0",
     "babylonjs-materials": "^4.2.0"
   }
