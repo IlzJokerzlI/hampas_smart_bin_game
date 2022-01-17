@@ -29,12 +29,23 @@ class App {
         let light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene)
 
         // Board
-        new GameBoard(scene, {})
+        new GameBoard(scene, {side: groundSide, height: wallHeight})
 
         // Block
         let block = BABYLON.MeshBuilder.CreateBox('block', { height: 1, width: 1, depth: 1, }, scene)
         block.enableEdgesRendering()
         block.edgesColor = new BABYLON.Color4(1, 1, 1, 1)
+        block.position = new BABYLON.Vector3(0, 10, 0)
+        block.checkCollisions = true;
+        block.ellipsoid = new BABYLON.Vector3(0.4999, 0.4999, 0.4999)
+
+        // Block
+        let block2 = BABYLON.MeshBuilder.CreateBox('block2', { height: 1, width: 1, depth: 1, }, scene)
+        block2.enableEdgesRendering()
+        block2.edgesColor = new BABYLON.Color4(1, 1, 1, 1)
+        block2.position = new BABYLON.Vector3(0, 3, 0)
+        block2.ellipsoid = new BABYLON.Vector3(0.4999, 0.4999, 0.4999)
+        block2.checkCollisions = true
 
         // Material
         let mat = new BABYLON.StandardMaterial('', scene)
@@ -91,22 +102,31 @@ class App {
 
             // Block movement
             if (ev.key === 'w' && block.position.z < groundSide / 2 - 1) { // Front
-                block.position.z += 1
+                block.moveWithCollisions(new BABYLON.Vector3(0, 0, 1))
             } else if (ev.key === 's' && block.position.z > -groundSide / 2 + 1) { // Back
-                block.position.z -= 1
+                block.moveWithCollisions(new BABYLON.Vector3(0, 0, -1))
             } else if (ev.key === 'a' && block.position.x > -groundSide / 2 + 1) { // Left
-                block.position.x -= 1
+                block.moveWithCollisions(new BABYLON.Vector3(-1, 0, 0))
             } else if (ev.key === 'd' && block.position.x < groundSide / 2 - 1) { // Right
-                block.position.x += 1
-            } else if (!ev.shiftKey && ev.key === ' ' && block.position.y > 0) { // Down
-                block.position.y -= 1
+                block.moveWithCollisions(new BABYLON.Vector3(1, 0, 0))
+            } else if (!ev.shiftKey && ev.key === ' ' && block.position.y > 0.5) { // Down
+                block.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
             } else if (ev.shiftKey && ev.key === ' ' && block.position.y < wallHeight - 1.5) { // Up
-                block.position.y += 1
+                block.moveWithCollisions(new BABYLON.Vector3(0, 1, 0))
             }
+            block.position = new BABYLON.Vector3(Math.round(block.position.x), Math.round(block.position.y), Math.round(block.position.z))
         })
+
+        setInterval(() => {
+            if (!block.collider ?.collisionFound) {
+                block.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
+                block.position = new BABYLON.Vector3(Math.round(block.position.x), Math.round(block.position.y), Math.round(block.position.z))
+            }
+        }, 1000)
 
         // Run the main render loop
         engine.runRenderLoop(() => {
+            console.log(block.collider ?.collisionFound)
 
             // Prevent camera going under ground level
             if (camera.position.y < 0) {
@@ -116,4 +136,11 @@ class App {
         })
     }
 }
-new App()
+
+// Entry point
+async function main() {
+    // Start App
+    new App()
+}
+
+main()
