@@ -6,6 +6,8 @@ const groundSide = 11
 const wallHeight = groundSide * 2
 
 class App {
+    blocks: BABYLON.Mesh[] = [];
+
     constructor() {
         // Create the canvas html element and attach it to the webpage
         let canvas = document.createElement("canvas")
@@ -29,28 +31,28 @@ class App {
         let light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene)
 
         // Board
-        new GameBoard(scene, {side: groundSide, height: wallHeight})
+        const board = new GameBoard(scene, { side: groundSide, height: wallHeight })
 
-        // Block
-        let block = BABYLON.MeshBuilder.CreateBox('block', { height: 1, width: 1, depth: 1, }, scene)
-        block.enableEdgesRendering()
-        block.edgesColor = new BABYLON.Color4(1, 1, 1, 1)
-        block.position = new BABYLON.Vector3(0, 10, 0)
-        block.checkCollisions = true;
-        block.ellipsoid = new BABYLON.Vector3(0.4999, 0.4999, 0.4999)
+        const generateBlock = () => {
+            console.log('Generate Block')
+            // Block
+            let block = BABYLON.MeshBuilder.CreateBox('block', { height: 1, width: 1, depth: 1, }, scene)
+            block.enableEdgesRendering()
+            block.edgesColor = new BABYLON.Color4(1, 1, 1, 1)
+            block.position = new BABYLON.Vector3(0, 15, 0)
+            block.ellipsoid = new BABYLON.Vector3(0.4999, 0.4999, 0.4999)
+            block.checkCollisions = true;
 
-        // Block
-        let block2 = BABYLON.MeshBuilder.CreateBox('block2', { height: 1, width: 1, depth: 1, }, scene)
-        block2.enableEdgesRendering()
-        block2.edgesColor = new BABYLON.Color4(1, 1, 1, 1)
-        block2.position = new BABYLON.Vector3(0, 3, 0)
-        block2.ellipsoid = new BABYLON.Vector3(0.4999, 0.4999, 0.4999)
-        block2.checkCollisions = true
+            // Material
+            let mat = new BABYLON.StandardMaterial('', scene)
+            mat.diffuseColor = new BABYLON.Color3(1, 1, 0)
+            block.material = mat
 
-        // Material
-        let mat = new BABYLON.StandardMaterial('', scene)
-        mat.diffuseColor = new BABYLON.Color3(1, 1, 0)
-        block.material = mat
+            return block
+        }
+        this.blocks.push(generateBlock());
+
+
 
         window.addEventListener("keydown", (ev) => {
             if (ev.ctrlKey && ev.shiftKey && ev.altKey) {
@@ -101,6 +103,7 @@ class App {
             }
 
             // Block movement
+            const block = this.blocks[this.blocks.length - 1]
             if (ev.key === 'w' && block.position.z < groundSide / 2 - 1) { // Front
                 block.moveWithCollisions(new BABYLON.Vector3(0, 0, 1))
             } else if (ev.key === 's' && block.position.z > -groundSide / 2 + 1) { // Back
@@ -118,7 +121,8 @@ class App {
         })
 
         setInterval(() => {
-            if (!block.collider ?.collisionFound) {
+            const block = this.blocks[this.blocks.length - 1]
+            if (!block.collider?.collisionFound) {
                 block.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
                 block.position = new BABYLON.Vector3(Math.round(block.position.x), Math.round(block.position.y), Math.round(block.position.z))
             }
@@ -126,11 +130,14 @@ class App {
 
         // Run the main render loop
         engine.runRenderLoop(() => {
-            console.log(block.collider ?.collisionFound)
-
             // Prevent camera going under ground level
             if (camera.position.y < 0) {
                 camera.beta = Rad(90)
+            }
+
+            const block = this.blocks[this.blocks.length - 1]
+            if (block.collider?.collisionFound) {
+                this.blocks.push(generateBlock())
             }
             scene.render()
         })
