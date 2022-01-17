@@ -10,15 +10,27 @@ interface Wall {
     yRot: number
 }
 
-export class GameBoard {
-    private _scene: BABYLON.Scene
-    private _groundSide: number
-    private _wallHeight: number
+interface Board {
+    ground: BABYLON.Mesh
+    lid: BABYLON.Mesh
+    frontWall: BABYLON.Mesh
+    backWall: BABYLON.Mesh
+    leftWall: BABYLON.Mesh
+    rightWall: BABYLON.Mesh
+}
 
-    constructor(scene: BABYLON.Scene, { size = 11 }) {
+export class GameBoard {
+    private _defaultGroundSide = 11
+    private _scene: BABYLON.Scene
+    readonly _groundSide: number
+    readonly _wallHeight: number
+    readonly prop: Board
+
+    constructor(scene: BABYLON.Scene, { height = 0, side = 0}) {
         this._scene = scene
-        this._groundSide = size
-        this._wallHeight = size * 2
+        this._groundSide = (side > 3 || side%2 != 0) ? side : this._defaultGroundSide
+        this._wallHeight = (height > this._defaultGroundSide * 2) ? height : this._defaultGroundSide * 2
+        this.prop = <Board>{}
         this._create()
     }
 
@@ -42,32 +54,52 @@ export class GameBoard {
         ]
 
         // Ground
-        const ground = BABYLON.MeshBuilder.CreateGround('ground', { width: this._groundSide, height: this._groundSide, subdivisions: this._groundSide }, this._scene)
-        ground.material = mat
-        ground.position = new BABYLON.Vector3(0, -0.5, 0)
+        this.prop.ground = BABYLON.MeshBuilder.CreateGround('ground', { width: this._groundSide, height: this._groundSide, subdivisions: this._groundSide }, this._scene)
+        this.prop.ground.material = mat
+        this.prop.ground.position = new BABYLON.Vector3(0, -0.5, 0)
+        this.prop.ground.checkCollisions = true
 
         // Lid
-        const lid = BABYLON.MeshBuilder.CreatePlane('lid', { width: this._groundSide, height: this._groundSide }, this._scene)
-        lid.position = new BABYLON.Vector3(0, this._wallHeight - 0.5, 0)
-        lid.rotation = RadRotVect({ x: 90 })
-        lid.checkCollisions = true
-        lid.visibility = 0
+        this.prop.lid = BABYLON.MeshBuilder.CreatePlane('lid', { width: this._groundSide, height: this._groundSide }, this._scene)
+        this.prop.lid.position = new BABYLON.Vector3(0, this._wallHeight - 0.5, 0)
+        this.prop.lid.rotation = RadRotVect({ x: 90 })
+        this.prop.lid.checkCollisions = true
+        this.prop.lid.visibility = 0
 
         // Walls
         wallsData.forEach((v) => {
             // Graphical wall
-            let wall = BABYLON.MeshBuilder.CreatePlane(v.name, { width: this._groundSide, height: this._wallHeight }, this._scene)
+            const wall = BABYLON.MeshBuilder.CreatePlane(v.name, { width: this._groundSide, height: this._wallHeight }, this._scene)
             wall.position = new BABYLON.Vector3(v.xPos, v.yPos, v.zPos)
             wall.rotation = RadRotVect({ y: v.yRot })
             wall.material = mat
 
             // Collision
             if (this._scene.collisionsEnabled) {
-                let wallCollision = BABYLON.MeshBuilder.CreatePlane(v.name, { width: this._groundSide, height: this._wallHeight, sideOrientation: BABYLON.Mesh.BACKSIDE }, this._scene)
+                const wallCollision = BABYLON.MeshBuilder.CreatePlane(v.name, { width: this._groundSide, height: this._wallHeight, sideOrientation: BABYLON.Mesh.BACKSIDE }, this._scene)
                 wallCollision.position = new BABYLON.Vector3(v.xPos, v.yPos, v.zPos)
                 wallCollision.rotation = RadRotVect({ y: v.yRot })
                 wallCollision.checkCollisions = true
                 wallCollision.visibility = 0
+            }
+
+            // Record walls into array
+            switch (wall.name) {
+                case 'fWall': {
+                    this.prop.leftWall = wall
+                    break
+                }
+                case 'bWall': {
+                    this.prop.backWall = wall
+                    break
+                }
+                case 'lWall': {
+                    this.prop.leftWall = wall
+                    break
+                }
+                default: {
+                    this.prop.rightWall = wall
+                }
             }
         })
     }
