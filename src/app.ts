@@ -1,15 +1,14 @@
 import * as BABYLON from "babylonjs"
-import { Vector3 } from "babylonjs/Maths/math.vector"
 import { GameBoard } from "./app/game-board"
 import { Gameplay } from "./app/gameplay"
+import { Block } from "./app/models/block"
 import { Rad, WorldAxes } from './app/utils'
 
-const groundSide = 11
-const wallHeight = groundSide * 2
+const groundSide = 5
 
 class App {
-    blocks: BABYLON.Mesh[] = [];
-    getCurrentBlock = (): BABYLON.Mesh => {
+    blocks: Block[] = [];
+    getCurrentBlock = (): Block => {
         return this.blocks[this.blocks.length - 1]
     }
 
@@ -37,7 +36,7 @@ class App {
         let light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene)
 
         // Board
-        const board = new GameBoard(scene, { side: groundSide, height: wallHeight })
+        const board = new GameBoard(scene, { side: groundSide})
 
         this.blocks.push(gameplay.generateBlock());
 
@@ -61,38 +60,8 @@ class App {
                 }
             }
 
-            // Block rotation
-            if (ev.shiftKey) {
-                switch (ev.key) {
-                    case 'w': {
-                        // x counter-clock wise rotation
-                        break
-                    }
-                    case 's': {
-                        // x clock wise rotation
-                        break
-                    }
-                    case 'a': {
-                        // y counter-clock wise rotation
-                        break
-                    }
-                    case 'd': {
-                        // y clock wise rotation
-                        break
-                    }
-                    case 'q': {
-                        // z counter-clock wise rotation
-                        break
-                    }
-                    case 'e': {
-                        // z clock wise rotation
-                        break
-                    }
-                }
-            }
-
             // Block movement
-            const currentBlock = this.getCurrentBlock()
+            const currentBlock = this.getCurrentBlock().shape
             if (ev.key === 'w' && currentBlock.position.z < groundSide / 2 - 1) { // Front
                 currentBlock.moveWithCollisions(new BABYLON.Vector3(0, 0, 1))
             } else if (ev.key === 's' && currentBlock.position.z > -groundSide / 2 + 1) { // Back
@@ -103,14 +72,14 @@ class App {
                 currentBlock.moveWithCollisions(new BABYLON.Vector3(1, 0, 0))
             } else if (!ev.shiftKey && ev.key === ' ' && currentBlock.position.y > 0.5) { // Down
                 currentBlock.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
-            } else if (ev.shiftKey && ev.key === ' ' && currentBlock.position.y < wallHeight - 1.5) { // Up
+            } else if (ev.shiftKey && ev.key === ' ' && currentBlock.position.y < board._wallHeight - 1.5) { // Up
                 currentBlock.moveWithCollisions(new BABYLON.Vector3(0, 1, 0))
             }
             currentBlock.position = new BABYLON.Vector3(Math.round(currentBlock.position.x), Math.round(currentBlock.position.y), Math.round(currentBlock.position.z))
         })
 
         setInterval(() => {
-            const currentBlock = this.getCurrentBlock()
+            const currentBlock = this.getCurrentBlock().shape
             let a = currentBlock.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
             currentBlock.position = new BABYLON.Vector3(Math.round(currentBlock.position.x), Math.round(currentBlock.position.y), Math.round(currentBlock.position.z))
         }, 1000)
@@ -122,7 +91,7 @@ class App {
                 camera.beta = Rad(90)
             }
 
-            const currentBlock = this.getCurrentBlock()
+            const currentBlock = this.getCurrentBlock().shape
             const collidedMeshPos = currentBlock.collider?.collidedMesh?.position
             if (currentBlock.collider?.collisionFound && collidedMeshPos != undefined && currentBlock.position.y - collidedMeshPos.y >= 0.5) {
                 this.blocks.push(gameplay.generateBlock())

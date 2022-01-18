@@ -1,4 +1,5 @@
 import * as BABYLON from 'babylonjs'
+import { Block } from './models/block'
 
 export class Gameplay {
     private _scene: BABYLON.Scene
@@ -8,19 +9,12 @@ export class Gameplay {
     }
 
 
-    generateBlock(): BABYLON.Mesh {
-        // Block
-        let block = BABYLON.MeshBuilder.CreateBox('block', { height: 1, width: 1, depth: 1, }, this._scene)
-        block.enableEdgesRendering()
-        block.edgesColor = new BABYLON.Color4(1, 1, 1, 1)
-        block.position = new BABYLON.Vector3(0, 15, 0)
-        block.ellipsoid = new BABYLON.Vector3(0.4999, 0.4999, 0.4999)
-        block.checkCollisions = true;
-
-        // Material
+    generateBlock(): Block {
         let mat = new BABYLON.StandardMaterial('', this._scene)
         mat.diffuseColor = new BABYLON.Color3(1, 1, 0)
-        block.material = mat
+
+        // Block
+        let block = new Block({mat: mat, scene: this._scene, size: new BABYLON.Vector3(1,1,1), weight: 10})
 
         return block
     }
