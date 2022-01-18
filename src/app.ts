@@ -114,8 +114,8 @@ class App {
                 block.moveWithCollisions(new BABYLON.Vector3(1, 0, 0))
             } else if (!ev.shiftKey && ev.key === ' ' && block.position.y > 0.5) { // Down
                 block.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
-            } else if (ev.shiftKey && ev.key === ' ' && block.position.y < wallHeight - 1.5) { // Up
-                block.moveWithCollisions(new BABYLON.Vector3(0, 1, 0))
+            //} else if (ev.shiftKey && ev.key === ' ' && block.position.y < wallHeight - 1.5) { // Up
+                //block.moveWithCollisions(new BABYLON.Vector3(0, 1, 0))
             }
             block.position = new BABYLON.Vector3(Math.round(block.position.x), Math.round(block.position.y), Math.round(block.position.z))
         })
