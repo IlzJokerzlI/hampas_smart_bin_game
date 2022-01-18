@@ -1,4 +1,5 @@
 import * as BABYLON from "babylonjs"
+import { Vector3 } from "babylonjs/Maths/math.vector"
 import { GameBoard } from "./app/game-board"
 import { Rad, WorldAxes } from './app/utils'
 
@@ -34,7 +35,6 @@ class App {
         const board = new GameBoard(scene, { side: groundSide, height: wallHeight })
 
         const generateBlock = () => {
-            console.log('Generate Block')
             // Block
             let block = BABYLON.MeshBuilder.CreateBox('block', { height: 1, width: 1, depth: 1, }, scene)
             block.enableEdgesRendering()
@@ -122,10 +122,8 @@ class App {
 
         setInterval(() => {
             const block = this.blocks[this.blocks.length - 1]
-            if (!block.collider?.collisionFound) {
-                block.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
-                block.position = new BABYLON.Vector3(Math.round(block.position.x), Math.round(block.position.y), Math.round(block.position.z))
-            }
+            let a = block.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
+            block.position = new BABYLON.Vector3(Math.round(block.position.x), Math.round(block.position.y), Math.round(block.position.z))
         }, 1000)
 
         // Run the main render loop
@@ -136,7 +134,8 @@ class App {
             }
 
             const block = this.blocks[this.blocks.length - 1]
-            if (block.collider?.collisionFound) {
+            const collidedMeshPos = block.collider?.collidedMesh?.position
+            if (block.collider?.collisionFound && collidedMeshPos != undefined && block.position.y - collidedMeshPos.y >= 0.5) {
                 this.blocks.push(generateBlock())
             }
             scene.render()
