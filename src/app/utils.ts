@@ -8,6 +8,13 @@ export function RadRotVect({ x = 0, y = 0, z = 0 }): BABYLON.Vector3 {
     return new BABYLON.Vector3(Rad(x), Rad(y), Rad(z))
 }
 
+// Round
+export function Round(value, step) {
+    step || (step = 1.0);
+    var inv = 1.0 / step;
+    return Math.round(value * inv) / inv;
+}
+
 // World axes
 export class WorldAxes {
     private _scene: BABYLON.Scene

@@ -18,7 +18,7 @@ export class Block {
         this.shape.enableEdgesRendering()
         this.shape.edgesColor = new BABYLON.Color4(1, 1, 1, 1)
         this.shape.position = new BABYLON.Vector3(0, 15, 0)
-        this.shape.ellipsoid = size.divide(new BABYLON.Vector3(2, 2, 2)).subtract(new BABYLON.Vector3(0.00001, 0.00001, 0.00001))
+        this.shape.ellipsoid = size.divide(new BABYLON.Vector3(2, 2, 2)).subtract(new BABYLON.Vector3(0.001, 0.001, 0.001))
         this.shape.checkCollisions = true;
         this.shape.material = params.mat
 
