@@ -17,6 +17,7 @@ npm run build
 # Build and serve project in port 8080
 npm run start
 ```
+test
 
 ## In-game Keyboard Shortcuts
 
