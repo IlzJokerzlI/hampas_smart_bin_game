@@ -14,6 +14,7 @@ export class Gameplay {
     }
     totalWeight = 0
     worldAxes: WorldAxes | null = null
+    isGameOver = false
 
     constructor(scene: BABYLON.Scene) {
         // Board
@@ -83,8 +84,7 @@ export class Gameplay {
                     this.label.updateText(scene, this.totalWeight + ' / 100')
                     this.blocks.push(this.board.generateBlock())
                 } else {
-                    // TODO: Implement lost
-                    console.log('YOU LOST')
+                    this.isGameOver = true
                 }
             }
             scene.render()

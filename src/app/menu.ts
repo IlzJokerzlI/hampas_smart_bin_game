@@ -12,7 +12,7 @@ export class Menu {
     constructor(scene: BABYLON.Scene) {
         this._advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
 
-        this._font = "Agency FB";
+        this._font = "Arial";
 
         this._start = new GUI.TextBlock("start");
         this._start.text = "C L I C K    A N Y W H E R E    T O    S T A R T";
@@ -25,7 +25,7 @@ export class Menu {
         this._advancedTexture.addControl(this._start);
 
 
-        this._titleFront = new GUI.TextBlock("titleFront");
+        this._titleFront = new GUI.TextBlock("title");
             this._titleFront.text = "Hampas";
             this._titleFront.color = "white";
             this._titleFront.fontSize = 196;

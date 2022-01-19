@@ -1,14 +1,18 @@
 import * as BABYLON from "babylonjs"
+import { GameOverMenu } from "./app/game-over-menu"
 import { Gameplay } from "./app/gameplay"
 import { Menu } from "./app/menu"
-import { Rad} from './app/utils'
+import { Rad } from './app/utils'
 
 
 class App {
     canvas: HTMLCanvasElement
-    menu: Menu
     scene: BABYLON.Scene
-    gameplay: Gameplay | undefined
+    menu!: Menu 
+    gameOverMenu!: GameOverMenu 
+    gameplay!: Gameplay
+    isGameOver = false
+    finalScore = 0
 
     constructor() {
         // Create the canvas html element and attach it to the webpage
@@ -23,24 +27,28 @@ class App {
         this.scene = new BABYLON.Scene(engine)
         this.scene.collisionsEnabled = true
 
-        // new Gameplay(this.scene)
-        this.menu = new Menu(this.scene)
+        window.addEventListener('resize', ()=> {
+            engine.resize()
+        })
 
         this.createScene(this.scene)
+
+        engine.runRenderLoop(() => {
+            if (!this.isGameOver) {
+                this.scene.render()
+            } else {
+                this.menu!._advancedTexture!.dispose()
+                this.scene.dispose()
+                const tempScene = new BABYLON.Scene(engine)
+                this.createScene(tempScene)
+                this.scene = tempScene
+                this.scene.render()
+            }
+        })
     }
 
     private createScene(scene: BABYLON.Scene) {
         const engine = scene.getEngine()
-
-        let pointerDown = scene.onPointerObservable.add((pointerInfo) => {
-            switch (pointerInfo.type) {
-                case BABYLON.PointerEventTypes.POINTERDOWN:
-                    scene.onPointerObservable.remove(pointerDown);
-                    this.menu.hide();
-                    this.gameplay = new Gameplay( scene);
-                    break;
-            }
-        });
 
         // Camera
         let camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("camera", Rad(270), 0.5, 45, BABYLON.Vector3.Zero(), scene)
@@ -57,7 +65,45 @@ class App {
             }
             scene.render()
         })
-    }
+ 
+        if (this.isGameOver) {
+            this.gameOverMenu = new GameOverMenu(scene, this.finalScore);
+            let pointerDown = scene.onPointerObservable.add((pointerInfo) => {
+                switch (pointerInfo.type) {
+                    case BABYLON.PointerEventTypes.POINTERDOWN:
+                        scene.onPointerObservable.remove(pointerDown);
+                        this.gameOverMenu!.hide();
+                        this.isGameOver= false;
+                        this.gameplay = new Gameplay(scene);
+                        scene.registerBeforeRender(() => {
+                            if (this.gameplay!.isGameOver) {
+                                this.isGameOver = true;
+                                this.finalScore = this.gameplay?.totalWeight!
+                            }
+                        });
+                        break;
+                }
+            });
+        } else {
+            this.menu = new Menu(scene);
+            let pointerDown = scene.onPointerObservable.add((pointerInfo) => {
+                switch (pointerInfo.type) {
+                    case BABYLON.PointerEventTypes.POINTERDOWN:
+                        scene.onPointerObservable.remove(pointerDown);
+                        this.menu!.hide();
+                        this.gameplay = new Gameplay(scene);
+                        scene.registerBeforeRender(() => {
+                            if (this.gameplay!.isGameOver) {
+                                this.isGameOver = true
+                                this.finalScore = this.gameplay?.totalWeight!
+                            }
+                        })
+                        break;
+                }
+            });
+        }
+
+   }
 }
 
 // Entry point
