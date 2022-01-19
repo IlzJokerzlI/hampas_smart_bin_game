@@ -21,7 +21,15 @@ export class Gameplay {
         this.blocks.push(this.board.generateBlock());
 
         // Label
-        this.label = new Label(scene, { initialText: this.totalWeight + ' / 100', position: new BABYLON.Vector3(0, -0.5, -this.board._groundSide / 2 - 1.5), rotation: RadRotVect({ x: 90 }) })
+        this.label = new Label(
+            scene,
+            {
+                planeWidth: this.board._groundSide,
+                initialText: this.totalWeight + ' / 100',
+                position: new BABYLON.Vector3(0, -0.5, -this.board._groundSide / 2 - 1.5),
+                rotation: RadRotVect({ x: 90 })
+            }
+        )
 
         setInterval(() => {
             const currentBlock = this.getCurrentBlock().shape
