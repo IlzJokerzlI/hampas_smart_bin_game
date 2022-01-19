@@ -2,11 +2,12 @@ import * as BABYLON from 'babylonjs'
 import { GameBoard } from './game-board'
 import { Block } from "./models/block"
 import { Label } from "./models/label"
-import { Rad, RadRotVect, Round, WorldAxes } from './utils'
+import { RadRotVect, Round, WorldAxes } from './utils'
 
 export class Gameplay {
     label: Label
     board: GameBoard
+    music: BABYLON.Sound
 
     blocks: Block[] = []
     getCurrentBlock = (): Block => {
@@ -14,6 +15,7 @@ export class Gameplay {
     }
     totalWeight = 0
     worldAxes: WorldAxes | null = null
+    isGameOver = false
 
     constructor(scene: BABYLON.Scene) {
         // Board
@@ -30,6 +32,9 @@ export class Gameplay {
                 rotation: RadRotVect({ x: 90 })
             }
         )
+
+        // Music
+        this.music =  new BABYLON.Sound("Music", "/assets/sounds/DieWachtAmRhein8bit.mp3", scene, null, { loop: true, autoplay: true }); //music
 
         setInterval(() => {
             const currentBlock = this.getCurrentBlock().shape
@@ -78,9 +83,13 @@ export class Gameplay {
             const currentBlock = this.getCurrentBlock().shape
             const collidedMeshPos = currentBlock.collider?.collidedMesh?.position
             if (currentBlock.collider?.collisionFound && collidedMeshPos != undefined && currentBlock.position.y - collidedMeshPos.y >= 0.5) {
-                this.totalWeight += this.getCurrentBlock().weight
-                this.label.updateText(scene, this.totalWeight + ' / 100')
-                this.blocks.push(this.board.generateBlock())
+                if (!currentBlock.intersectsMesh(this.board.prop.limit)) {
+                    this.totalWeight += this.getCurrentBlock().weight
+                    this.label.updateText(scene, this.totalWeight + ' / 100')
+                    this.blocks.push(this.board.generateBlock())
+                } else {
+                    this.isGameOver = true
+                }
             }
             scene.render()
         })
