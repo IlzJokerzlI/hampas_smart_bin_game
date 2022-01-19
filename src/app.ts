@@ -1,7 +1,7 @@
-import * as BABYLON from "babylonjs"
-import { GameOverMenu } from "./app/game-over-menu"
-import { Gameplay } from "./app/gameplay"
-import { Menu } from "./app/menu"
+import * as BABYLON from 'babylonjs'
+import { EndGameMenu } from './app/end-game-menu'
+import { Gameplay } from './app/gameplay'
+import { Menu } from './app/menu'
 import { Rad } from './app/utils'
 
 
@@ -9,17 +9,17 @@ class App {
     canvas: HTMLCanvasElement
     scene: BABYLON.Scene
     menu!: Menu 
-    gameOverMenu!: GameOverMenu 
+    endGameMenu!: EndGameMenu 
     gameplay!: Gameplay
     isGameOver = false
     finalScore = 0
 
     constructor() {
         // Create the canvas html element and attach it to the webpage
-        this.canvas = document.createElement("canvas")
-        this.canvas.style.width = "100%"
-        this.canvas.style.height = "100%"
-        this.canvas.id = "gameCanvas"
+        this.canvas = document.createElement('canvas')
+        this.canvas.style.width = '100%'
+        this.canvas.style.height = '100%'
+        this.canvas.id = 'gameCanvas'
         document.body.appendChild(this.canvas)
 
         // Initialize babylon scene and engine
@@ -51,12 +51,12 @@ class App {
         const engine = scene.getEngine()
 
         // Camera
-        let camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("camera", Rad(270), 0.5, 45, BABYLON.Vector3.Zero(), scene)
+        let camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera('camera', Rad(270), 0.5, 45, BABYLON.Vector3.Zero(), scene)
         camera.attachControl(this.canvas, true)
         camera.checkCollisions = true
 
         // Light
-        let light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene)
+        let light1 = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(1, 1, 0), scene)
 
         engine.runRenderLoop(() => {
             // Prevent camera going under ground level
@@ -68,12 +68,12 @@ class App {
 
 
         if (this.isGameOver) {
-            this.gameOverMenu = new GameOverMenu(scene, this.finalScore);
+            this.endGameMenu = new EndGameMenu(scene, this.finalScore);
             let pointerDown = scene.onPointerObservable.add((pointerInfo) => {
                 switch (pointerInfo.type) {
                     case BABYLON.PointerEventTypes.POINTERDOWN:
                         scene.onPointerObservable.remove(pointerDown);
-                        this.gameOverMenu!.hide();
+                        this.endGameMenu!.hide();
                         this.isGameOver= false;
                         this.gameplay = new Gameplay(scene);
                         scene.registerBeforeRender(() => {

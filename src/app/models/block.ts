@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs'
-import { double } from "babylonjs/types";
+import { double } from 'babylonjs/types';
 
 
 interface Params {
@@ -29,7 +29,7 @@ export class Block {
 
         // Materials
         if (params.texture != undefined) {
-            const texMat = new BABYLON.StandardMaterial("trashTexture", params.scene);
+            const texMat = new BABYLON.StandardMaterial('trashTexture', params.scene);
             texMat.diffuseTexture = params.texture
             this.shape.material = texMat
         } else if (params.mat != undefined) {

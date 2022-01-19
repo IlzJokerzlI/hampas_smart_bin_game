@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs'
 import { GameBoard } from './game-board'
-import { Block } from "./models/block"
-import { Label } from "./models/label"
+import { Block } from './models/block'
+import { Label } from './models/label'
 import { RadRotVect, Round, WorldAxes } from './utils'
 
 export class Gameplay {
@@ -34,7 +34,7 @@ export class Gameplay {
         )
 
         // Music
-        this.music =  new BABYLON.Sound("Music", "/assets/sounds/DieWachtAmRhein8bit.mp3", scene, null, { loop: true, autoplay: true }); //music
+        this.music =  new BABYLON.Sound('Music', "/assets/sounds/DieWachtAmRhein8bit.mp3", scene, null, { loop: true, autoplay: true }); //music
 
         setInterval(() => {
             const currentBlock = this.getCurrentBlock().shape
@@ -42,7 +42,7 @@ export class Gameplay {
             currentBlock.position = new BABYLON.Vector3(Round(currentBlock.position.x, 0.5), Round(currentBlock.position.y, 0.5), Round(currentBlock.position.z, 0.5))
         }, 1000)
 
-        window.addEventListener("keydown", (ev) => {
+        window.addEventListener('keydown', (ev) => {
             if (ev.ctrlKey && ev.shiftKey && ev.altKey) {
                 if (ev.key === 'I') { // Hide/show the Inspector (Ctrl+Shift+Alt+I)
                     if (scene.debugLayer.isVisible()) {

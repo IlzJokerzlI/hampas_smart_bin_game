@@ -1,6 +1,5 @@
 import * as BABYLON from 'babylonjs'
 import { GridMaterial } from 'babylonjs-materials'
-import { Vector3 } from 'babylonjs/Maths/math.vector'
 import { Block } from './models/block'
 import { RadRotVect } from './utils'
 
@@ -142,7 +141,7 @@ export class GameBoard {
                 size: size,
                 spawnPoint: spawnPoint,
                 weight: 10,
-                texture: new BABYLON.Texture("/assets/textures/trash2.jpg", this._scene)
+                texture: new BABYLON.Texture('/assets/textures/trash2.jpg', this._scene)
             },
         )
 
