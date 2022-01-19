@@ -2,15 +2,17 @@ import * as BABYLON from "babylonjs"
 import { GameBoard } from "./app/game-board"
 import { Gameplay } from "./app/gameplay"
 import { Block } from "./app/models/block"
-import { Rad, WorldAxes } from './app/utils'
+import { Label } from "./app/models/label"
+import { Rad, RadRotVect, WorldAxes } from './app/utils'
 
 const groundSide = 5
 
 class App {
-    blocks: Block[] = [];
+    blocks: Block[] = []
     getCurrentBlock = (): Block => {
         return this.blocks[this.blocks.length - 1]
     }
+    totalWeight = 0
 
     constructor() {
         // Create the canvas html element and attach it to the webpage
@@ -25,7 +27,6 @@ class App {
         let scene = new BABYLON.Scene(engine)
         let worldAxes: WorldAxes | null = null
         scene.collisionsEnabled = true
-        let gameplay = new Gameplay(scene)
 
         // Camera
         let camera: BABYLON.ArcRotateCamera = new BABYLON.ArcRotateCamera("camera", Rad(270), 0.5, 45, BABYLON.Vector3.Zero(), scene)
@@ -36,11 +37,13 @@ class App {
         let light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene)
 
         // Board
-        const board = new GameBoard(scene, { side: groundSide})
+        const board = new GameBoard(scene, { side: groundSide })
+        let gameplay = new Gameplay(scene, board._wallHeight)
+
+        // Label
+        const label = new Label(scene, { initialText: this.totalWeight + ' / 100', position: new BABYLON.Vector3(0, -0.5, -board._groundSide / 2 - 1.5), rotation: RadRotVect({ x: 90 }) })
 
         this.blocks.push(gameplay.generateBlock());
-
-
 
         window.addEventListener("keydown", (ev) => {
             if (ev.ctrlKey && ev.shiftKey && ev.altKey) {
@@ -94,6 +97,8 @@ class App {
             const currentBlock = this.getCurrentBlock().shape
             const collidedMeshPos = currentBlock.collider?.collidedMesh?.position
             if (currentBlock.collider?.collisionFound && collidedMeshPos != undefined && currentBlock.position.y - collidedMeshPos.y >= 0.5) {
+                this.totalWeight += this.getCurrentBlock().weight
+                label.updateText(scene, this.totalWeight + ' / 100')
                 this.blocks.push(gameplay.generateBlock())
             }
             scene.render()

@@ -3,9 +3,11 @@ import { Block } from './models/block'
 
 export class Gameplay {
     private _scene: BABYLON.Scene
+    private _wallHeight: number
 
-    constructor(scene: BABYLON.Scene) {
+    constructor(scene: BABYLON.Scene, wallHeight:number) {
         this._scene = scene
+        this._wallHeight = wallHeight
     }
 
 
@@ -19,7 +21,15 @@ export class Gameplay {
 
         // Block
         // let block = new Block({ mat: mat, scene: this._scene, size: new BABYLON.Vector3(generateNumber(1, 4), generateNumber(1, 4), generateNumber(1, 4)), weight: 10, })
-        let block = new Block({ mat: mat, scene: this._scene, size: new BABYLON.Vector3(1, 1, 1), weight: 10, })
+        let block = new Block(
+            {
+                mat: mat,
+                scene: this._scene,
+                size: new BABYLON.Vector3(1, 1, 1),
+                spawnPoint: new BABYLON.Vector3(0, this._wallHeight - 1, 0),
+                weight: 10,
+            },
+        )
 
         return block
     }
