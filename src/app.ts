@@ -55,7 +55,6 @@ class App {
             if (camera.position.y < 0) {
                 camera.beta = Rad(90)
             }
-
             scene.render()
         })
     }

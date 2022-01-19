@@ -1,5 +1,6 @@
 import * as BABYLON from 'babylonjs'
 import { GridMaterial } from 'babylonjs-materials'
+import { Vector3 } from 'babylonjs/Maths/math.vector'
 import { Block } from './models/block'
 import { RadRotVect } from './utils'
 
@@ -14,6 +15,7 @@ interface Wall {
 interface Board {
     ground: BABYLON.Mesh
     lid: BABYLON.Mesh
+    limit: BABYLON.Mesh
     frontWall: BABYLON.Mesh
     backWall: BABYLON.Mesh
     leftWall: BABYLON.Mesh
@@ -66,6 +68,19 @@ export class GameBoard {
         this.prop.lid.rotation = RadRotVect({ x: 90 })
         this.prop.lid.checkCollisions = true
         this.prop.lid.visibility = 0
+
+        // Limit
+        this.prop.limit = BABYLON.MeshBuilder.CreatePlane('limit', { width: this._groundSide, height: this._groundSide ,sideOrientation: BABYLON.Mesh.DOUBLESIDE}, this._scene)
+        this.prop.limit.position = new BABYLON.Vector3(0, (this._wallHeight - this._groundSide / 2), 0)
+        this.prop.limit.rotation = RadRotVect({ x: 90 })
+        this.prop.limit.enableEdgesRendering(.9999)
+        this.prop.limit.edgesColor = new BABYLON.Color4(1, 0, 0)
+        this.prop.limit.edgesWidth = 10
+        this.prop.limit.visibility = 0.1
+        
+        const limitMat = new BABYLON.StandardMaterial('limitMat', this._scene)
+        limitMat.diffuseColor = new BABYLON.Color3(1, 0, 0)
+        this.prop.limit.material = limitMat
 
         // Walls
         wallsData.forEach((v) => {

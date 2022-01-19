@@ -2,7 +2,7 @@ import * as BABYLON from 'babylonjs'
 import { GameBoard } from './game-board'
 import { Block } from "./models/block"
 import { Label } from "./models/label"
-import { Rad, RadRotVect, Round, WorldAxes } from './utils'
+import { RadRotVect, Round, WorldAxes } from './utils'
 
 export class Gameplay {
     label: Label
@@ -78,9 +78,14 @@ export class Gameplay {
             const currentBlock = this.getCurrentBlock().shape
             const collidedMeshPos = currentBlock.collider?.collidedMesh?.position
             if (currentBlock.collider?.collisionFound && collidedMeshPos != undefined && currentBlock.position.y - collidedMeshPos.y >= 0.5) {
-                this.totalWeight += this.getCurrentBlock().weight
-                this.label.updateText(scene, this.totalWeight + ' / 100')
-                this.blocks.push(this.board.generateBlock())
+                if (!currentBlock.intersectsMesh(this.board.prop.limit)) {
+                    this.totalWeight += this.getCurrentBlock().weight
+                    this.label.updateText(scene, this.totalWeight + ' / 100')
+                    this.blocks.push(this.board.generateBlock())
+                } else {
+                    // TODO: Implement lost
+                    console.log('YOU LOST')
+                }
             }
             scene.render()
         })
