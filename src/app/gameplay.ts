@@ -7,6 +7,7 @@ import { RadRotVect, Round, WorldAxes } from './utils'
 export class Gameplay {
     label: Label
     board: GameBoard
+    music: BABYLON.Sound
 
     blocks: Block[] = []
     getCurrentBlock = (): Block => {
@@ -31,6 +32,9 @@ export class Gameplay {
                 rotation: RadRotVect({ x: 90 })
             }
         )
+
+        // Music
+        this.music =  new BABYLON.Sound("Music", "/assets/sounds/DieWachtAmRhein8bit.mp3", scene, null, { loop: true, autoplay: true }); //music
 
         setInterval(() => {
             const currentBlock = this.getCurrentBlock().shape

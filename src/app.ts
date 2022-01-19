@@ -66,7 +66,6 @@ class App {
             scene.render()
         })
 
-        var music = new BABYLON.Sound("Music", "/assets/sounds/DieWachtAmRhein8bit.mp3", scene, null, { loop: true, autoplay: true }); //music
 
         if (this.isGameOver) {
             this.gameOverMenu = new GameOverMenu(scene, this.finalScore);
