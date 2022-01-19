@@ -142,6 +142,7 @@ export class GameBoard {
                 size: size,
                 spawnPoint: spawnPoint,
                 weight: 10,
+                texture: new BABYLON.Texture("/assets/textures/trash2.jpg", this._scene)
             },
         )
 
