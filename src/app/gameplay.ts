@@ -2,7 +2,7 @@ import * as BABYLON from 'babylonjs'
 import { GameBoard } from './game-board'
 import { Block } from "./models/block"
 import { Label } from "./models/label"
-import { RadRotVect, Round, WorldAxes } from './utils'
+import { Rad, RadRotVect, Round, WorldAxes } from './utils'
 
 export class Gameplay {
     label: Label
@@ -23,15 +23,11 @@ export class Gameplay {
         // Label
         this.label = new Label(scene, { initialText: this.totalWeight + ' / 100', position: new BABYLON.Vector3(0, -0.5, -this.board._groundSide / 2 - 1.5), rotation: RadRotVect({ x: 90 }) })
 
-
-
         setInterval(() => {
             const currentBlock = this.getCurrentBlock().shape
             currentBlock.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
             currentBlock.position = new BABYLON.Vector3(Round(currentBlock.position.x, 0.5), Round(currentBlock.position.y, 0.5), Round(currentBlock.position.z, 0.5))
         }, 1000)
-
-
 
         window.addEventListener("keydown", (ev) => {
             if (ev.ctrlKey && ev.shiftKey && ev.altKey) {
@@ -71,7 +67,6 @@ export class Gameplay {
 
         const engine = scene.getEngine()
         engine.runRenderLoop(() => {
-
             const currentBlock = this.getCurrentBlock().shape
             const collidedMeshPos = currentBlock.collider?.collidedMesh?.position
             if (currentBlock.collider?.collisionFound && collidedMeshPos != undefined && currentBlock.position.y - collidedMeshPos.y >= 0.5) {
