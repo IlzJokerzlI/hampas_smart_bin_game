@@ -1,5 +1,6 @@
 import * as BABYLON from 'babylonjs'
 import { GridMaterial } from 'babylonjs-materials'
+import { Block } from './models/block'
 import { RadRotVect } from './utils'
 
 interface Wall {
@@ -26,9 +27,9 @@ export class GameBoard {
     readonly _wallHeight: number
     readonly prop: Board
 
-    constructor(scene: BABYLON.Scene, { height = 0, side = 0}) {
+    constructor(scene: BABYLON.Scene, { height = 0, side = 0 }) {
         this._scene = scene
-        this._groundSide = (side > 3 || side%2 != 0) ? side : this._defaultGroundSide
+        this._groundSide = (side > 3 || side % 2 != 0) ? side : this._defaultGroundSide
         this._wallHeight = (height > this._defaultGroundSide * 2) ? height : this._defaultGroundSide * 2
         this.prop = <Board>{}
         this._create()
@@ -102,5 +103,33 @@ export class GameBoard {
                 }
             }
         })
+    }
+
+    generateBlock(): Block {
+        let mat = new BABYLON.StandardMaterial('', this._scene)
+        mat.diffuseColor = new BABYLON.Color3(1, 1, 0)
+
+        let generateNumber = (min: number, max: number): number => {
+            return Math.floor(Math.random() * (max - min + 1)) + min
+        }
+
+        const maxSize = Math.round(this._groundSide / 2)
+        const size = new BABYLON.Vector3(generateNumber(1, maxSize), generateNumber(1, maxSize), generateNumber(1, maxSize))
+        const spawnPoint = new BABYLON.Vector3(
+            (size.x % 2 == 0) ? 0.5 : 0,
+            this._wallHeight - Math.floor(size.y / 2) - 1,
+            (size.z % 2 == 0) ? 0.5 : 0,
+        )
+        const block = new Block(
+            {
+                mat: mat,
+                scene: this._scene,
+                size: size,
+                spawnPoint: spawnPoint,
+                weight: 10,
+            },
+        )
+
+        return block
     }
 }

@@ -1,9 +1,8 @@
 import * as BABYLON from "babylonjs"
 import { GameBoard } from "./app/game-board"
-import { Gameplay } from "./app/gameplay"
 import { Block } from "./app/models/block"
 import { Label } from "./app/models/label"
-import { Rad, RadRotVect, WorldAxes } from './app/utils'
+import { Rad, RadRotVect, Round, WorldAxes } from './app/utils'
 
 const groundSide = 5
 
@@ -38,12 +37,11 @@ class App {
 
         // Board
         const board = new GameBoard(scene, { side: groundSide })
-        let gameplay = new Gameplay(scene, board._wallHeight)
 
         // Label
         const label = new Label(scene, { initialText: this.totalWeight + ' / 100', position: new BABYLON.Vector3(0, -0.5, -board._groundSide / 2 - 1.5), rotation: RadRotVect({ x: 90 }) })
 
-        this.blocks.push(gameplay.generateBlock());
+        this.blocks.push(board.generateBlock());
 
         window.addEventListener("keydown", (ev) => {
             if (ev.ctrlKey && ev.shiftKey && ev.altKey) {
@@ -78,13 +76,13 @@ class App {
             } else if (ev.shiftKey && ev.key === ' ' && currentBlock.position.y < board._wallHeight - 1.5) { // Up
                 currentBlock.moveWithCollisions(new BABYLON.Vector3(0, 1, 0))
             }
-            currentBlock.position = new BABYLON.Vector3(Math.round(currentBlock.position.x), Math.round(currentBlock.position.y), Math.round(currentBlock.position.z))
+            currentBlock.position = new BABYLON.Vector3(Round(currentBlock.position.x, 0.5), Round(currentBlock.position.y, 0.5), Round(currentBlock.position.z, 0.5))
         })
 
         setInterval(() => {
             const currentBlock = this.getCurrentBlock().shape
-            let a = currentBlock.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
-            currentBlock.position = new BABYLON.Vector3(Math.round(currentBlock.position.x), Math.round(currentBlock.position.y), Math.round(currentBlock.position.z))
+            currentBlock.moveWithCollisions(new BABYLON.Vector3(0, -1, 0))
+            currentBlock.position = new BABYLON.Vector3(Round(currentBlock.position.x, 0.5), Round(currentBlock.position.y, 0.5), Round(currentBlock.position.z, 0.5))
         }, 1000)
 
         // Run the main render loop
@@ -99,7 +97,7 @@ class App {
             if (currentBlock.collider?.collisionFound && collidedMeshPos != undefined && currentBlock.position.y - collidedMeshPos.y >= 0.5) {
                 this.totalWeight += this.getCurrentBlock().weight
                 label.updateText(scene, this.totalWeight + ' / 100')
-                this.blocks.push(gameplay.generateBlock())
+                this.blocks.push(board.generateBlock())
             }
             scene.render()
         })
