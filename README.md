@@ -1,6 +1,16 @@
-# Tetris Game with BabylonJS
+# Hampas Smart Bin Game
 
-A Tetris game implemented with BabylonJS
+A Tetris like game implemented with BabylonJS. The game aims to encourage people to  be better in placing the waste inside the waste bin. Thus, waste plastic texture is given to every blocks inside the game.
+
+## How to Play
+
+The player must fit in the waste bin with different sizes and weights of waste blocks that fell periodically from the top. If the player managed to fill in the waste bin after the weight reached a certain limit, the player was considered as winning the game. Otherwise, the player is considered as losing the game. 
+
+## Members
+
+- Arvin Lee
+
+- Gadtardi Wongkaren
 
 ## Instruction
 
@@ -17,25 +27,15 @@ npm run build
 # Build and serve project in port 8080
 npm run start
 ```
-test
 
 ## In-game Keyboard Shortcuts
 
-| Shortcut                           | Description                 |
-| ---------------------------------- | --------------------------- |
-| w                                  | Move block to the back      |
-| s                                  | Move block to the front     |
-| a                                  | Move block to the left      |
-| d                                  | Move block to the right     |
-| \<shift\> + w                      | x-rotate counter-clock wise |
-| \<shift\> + s                      | x-rotate clock wise         |
-| \<shift\> + a                      | y-rotate counter-clock wise |
-| \<shift\> + d                      | y-rotate clock wise         |
-| \<shift\> + q                      | z-rotate counter-clock wise |
-| \<shift\> + e                      | z-rotate clock wise         |
-| \<space\>                          | Move block down             |
-| \<shift\> + \<space\>              | Move block up               |
-| \<ctrl\> + \<shift\> + \<alt\> + I | Hide/show inspector         |
-| \<ctrl\> + \<shift\> + \<alt\> + X | Hide/show world axes        |
-
-
+| Shortcut                           | Description             |
+| ---------------------------------- | ----------------------- |
+| w                                  | Move block to the back  |
+| s                                  | Move block to the front |
+| a                                  | Move block to the left  |
+| d                                  | Move block to the right |
+| \<space\>                          | Move block down         |
+| \<ctrl\> + \<shift\> + \<alt\> + I | Hide/show inspector     |
+| \<ctrl\> + \<shift\> + \<alt\> + X | Hide/show world axes    |
